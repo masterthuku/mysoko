@@ -17,7 +17,7 @@ const Hero = () => {
               <span className="bg-green-600 px-3 py-1 max-sm:ml-1 rounded-full text-white text-xs">
                 NEWS
               </span>{" "}
-              Free Shipping on Orders Above $50!{" "}
+              Free Shipping on Orders Above Ksh.5000!{" "}
               <ChevronRightIcon
                 className="group-hover:ml-2 transition-all"
                 size={16}
