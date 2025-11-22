@@ -31,10 +31,10 @@ export async function POST(request) {
     if (
       !name ||
       !description ||
-      !mrp ||
-      !price ||
+      mrp === null ||
+      price === null ||
       !category ||
-      !images.length < 1
+      images.length < 1
     ) {
       return NextResponse.json(
         { error: "missing product details" },

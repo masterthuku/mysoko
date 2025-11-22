@@ -8,26 +8,32 @@ export async function GET(request) {
     const { userId } = getAuth(request);
     const storeId = await authSeller(userId);
 
-    const orders = await prisma.order.findMany({ where: { storeId: storeId } });
-    const products = await prisma.product.findMany({
-      where: { storeId: storeId },
+    const orders = await prisma.order.findMany({
+      where: { storeId },
     });
+
+    const products = await prisma.product.findMany({
+      where: { storeId },
+    });
+
     const ratings = await prisma.rating.findMany({
-      where: { productId: { in: products.map((product) => product.id) } },
+      where: { productId: { in: products.map((p) => p.id) } },
       include: {
         user: true,
         product: true,
       },
     });
-    const dashBoardData = {
+
+    const dashboardData = {
       ratings,
       totalOrders: orders.length,
-      totalEarnigs: Math.round(
+      totalEarnings: Math.round(
         orders.reduce((acc, order) => acc + order.total, 0)
       ),
       totalProducts: products.length,
     };
-    return NextResponse.json(dashBoardData);
+
+    return NextResponse.json({ dashboardData }); // <-- FIXED
   } catch (error) {
     console.error(error);
     return NextResponse.json(
