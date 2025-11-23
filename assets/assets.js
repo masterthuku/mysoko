@@ -329,7 +329,7 @@ export const storesDummyData = [
         id: "cmemkb98v0001tat8r1hiyxhn",
         userId: "user_31dOriXqC4TATvc0brIhlYbwwc5",
         name: "GreatStack",
-        description: "GreatStack is the education marketplace where you can buy goodies related to coding and tech",
+        description: "GreatStack is the education Sokoplace where you can buy goodies related to coding and tech",
         username: "greatstack",
         address: "123 Maplewood Drive Springfield, IL 62704 USA",
         status: "approved",
