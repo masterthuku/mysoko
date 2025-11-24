@@ -74,7 +74,7 @@ const OrderSummary = ({ totalPrice, items }) => {
       });
 
       if (paymentMethod === "STRIPE") {
-        Window.location.href = data.sesion.url;
+        window.location.href = data.url;
       } else {
         toast.success(data.message);
         router.push("/orders");

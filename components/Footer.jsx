@@ -172,7 +172,7 @@ const Footer = () => {
       title: "CONTACT",
       links: [
         { text: "mySoko16@gmail.com", path: "/", icon: MailIcon },
-        { text: "+254 701 780956", path: "/", icon: PhoneIcon },
+        { text: "+254 112 332031", path: "/", icon: PhoneIcon },
         { text: "White house, Regen", path: "/", icon: MapPinIcon },
       ],
     },
