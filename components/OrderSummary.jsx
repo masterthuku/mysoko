@@ -1,16 +1,17 @@
 import { PlusIcon, SquarePenIcon, XIcon } from "lucide-react";
 import React, { useState } from "react";
 import AddressModal from "./AddressModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Protect, useAuth, useUser } from "@clerk/nextjs";
 import axios from "axios";
+import { fetchCart } from "@/lib/features/cart/cartSlice";
 
 const OrderSummary = ({ totalPrice, items }) => {
-
-    const {user} = useUser();
-    const {getToken} = useAuth();
+  const { user } = useUser();
+  const { getToken } = useAuth();
+  const dispatch = useDispatch();
   const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "Ksh";
 
   const router = useRouter();
@@ -26,25 +27,62 @@ const OrderSummary = ({ totalPrice, items }) => {
   const handleCouponCode = async (event) => {
     event.preventDefault();
     try {
-        if (!user) {
-            return toast.error("You must be logged in to use a coupon");
-        }
-        const token = await getToken();
-        const { data } = await axios.post("/api/coupon", { code: couponCodeInput }, {
-            headers: {
+      if (!user) {
+        return toast.error("You must be logged in to use a coupon");
+      }
+      const token = await getToken();
+      const { data } = await axios.post(
+        "/api/coupon",
+        { code: couponCodeInput },
+        {
+          headers: {
             Authorization: `Bearer ${token}`,
-        }})
-        setCoupon(data.coupon);
-        toast.success("Coupon applied successfully");
+          },
+        }
+      );
+      setCoupon(data.coupon);
+      toast.success("Coupon applied successfully");
     } catch (error) {
-        toast.error(error?.response?.data?.error || error.message);
+      toast.error(error?.response?.data?.error || error.message);
     }
   };
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
+    try {
+      if (!user) {
+        return toast.error("You must be logged in to use a coupon");
+      }
+      if (!selectedAddress) {
+        return toast("Please select an address");
+      }
+      const token = await getToken();
 
-    router.push("/orders");
+      const orderData = {
+        addressId: selectedAddress.id,
+        items,
+        paymentMethod,
+      };
+
+      if (coupon) {
+        orderData.couponCode = coupon.code;
+      }
+      const { data } = await axios.post("/api/orders", orderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (paymentMethod === "STRIPE") {
+        Window.location.href = data.sesion.url;
+      } else {
+        toast.success(data.message);
+        router.push("/orders");
+        dispatch(fetchCart({ getToken }));
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.error || error.message);
+    }
   };
 
   return (

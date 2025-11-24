@@ -6,7 +6,7 @@ import React from "react";
 import CategoriesMarquee from "./CategoriesMarquee";
 
 const Hero = () => {
-  const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
+  const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "Ksh";
 
   return (
     <div className="mx-6">

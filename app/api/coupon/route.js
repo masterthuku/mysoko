@@ -3,35 +3,45 @@ import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-    try {
-        const { userId, has } = getAuth(request);
-        const { code } = await request.json();
-        const coupon = await prisma.coupon.findUnique({
-            where: {code: code.toUpperCase(), expiresAt: {gt: new Date()}}
-        })
-        if (!coupon) {
-            return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
-        }
+  try {
+    const { userId, has } = getAuth(request);
+    const { code } = await request.json();
 
-        if (coupon.forNewUser) {
-            const userOrdrers = await prisma.order.findMany({
-                where: {userId: userId}
-            })
-            if (userOrdrers.length > 0) {
-                return NextResponse.json({ error: "Coupon valid only for new users" }, { status: 400 });
-            }
-        }
-
-        if (coupon.forMember) {
-            const hasPlusPlan = has({plan: "plus"})
-
-            if (!hasPlusPlan) {
-                return NextResponse.json({ error: "Coupon valid only for members" }, { status: 400 });
-            }
-        }
-        return NextResponse.json({coupon})
-    } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: error.code || error.message }, { status: 400 });
+    const coupon = await prisma.coupon.findUnique({
+      where: { code: code.toUpperCase(), expiresAt: { gt: new Date() } },
+    });
+    if (!coupon) {
+      return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
     }
+
+    if (coupon.forNewUser) {
+      const userOrdrers = await prisma.order.findMany({
+        where: { userId: userId },
+      });
+      if (userOrdrers.length > 0) {
+        return NextResponse.json(
+          { error: "Coupon valid only for new users" },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (coupon.forMember) {
+      const hasPlusPlan = has({ plan: "plus" });
+
+      if (!hasPlusPlan) {
+        return NextResponse.json(
+          { error: "Coupon valid only for members" },
+          { status: 400 }
+        );
+      }
+    }
+    return NextResponse.json({ coupon });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: error.code || error.message },
+      { status: 400 }
+    );
+  }
 }
